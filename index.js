@@ -2,15 +2,24 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
+import bodyParser from "body-parser";
 
 import productRouter from "./server/routes/productRouter.js";
 import userRouter from "./server/routes/userRouter.js";
 import orderRouter from "./server/routes/orderRouter.js";
 import wishlistRouter from "./server/routes/wishlistRouter.js";
 
+import { Configuration, OpenAIApi } from "openai";
+
+const configuration = new Configuration({
+  apiKey: "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",
+});
+const openai = new OpenAIApi(configuration);
+
 dotenv.config();
 const app = express();
 app.use(express.json());
+app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Set up a whitelist and check against it:
@@ -58,6 +67,30 @@ app.get("/api/config/paypal", (req, res) => {
 // Server route
 app.get("/", (req, res) => {
   res.send("Service up and running!");
+});
+
+// Set up the ChatGPT endpoint
+app.post("/chat", async (req, res) => {
+  // Get the prompt from the request
+  const { prompt } = req.body;
+
+  // Generate a response with ChatGPT
+  // const completion = await openai.createCompletion({
+  //   model: "text-davinci-002",
+  //   prompt: prompt,
+  // });
+
+  const completion = await openai.createCompletion({
+  model:"text-davinci-003",
+  prompt:prompt
+  });
+  console.log(completion.data.choices)
+  let response = ''
+  completion.data.choices.forEach((c) => {
+    response = response + " " + c.text
+  });
+  res.send(response)
+  // res.send(completion.data.choices[0].text);
 });
 
 // Middleware for sending an error message to front
