@@ -12,7 +12,7 @@ import wishlistRouter from "./server/routes/wishlistRouter.js";
 import { Configuration, OpenAIApi } from "openai";
 
 const configuration = new Configuration({
-  apiKey: "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",
+  apiKey: "<CHATGPT API KEY>",
 });
 const openai = new OpenAIApi(configuration);
 
